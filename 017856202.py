@@ -94,7 +94,7 @@ def dijkstra():
             edge_weight = edge[1]
             
             if edge_head in unvisited_vertices:
-                new_vertex_weight = round(current_weight+edge_weight, 6)
+                new_vertex_weight = round(current_weight+edge_weight, 2)
                 
                 if new_vertex_weight < unvisited_vertices[edge_head]:
                     unvisited_vertices[edge_head] = new_vertex_weight
@@ -103,7 +103,7 @@ def dijkstra():
             if create_video:
                 current_vertex_x, current_vertex_y = coordinates[current_vertex]
                 head_x, head_y = coordinates[edge_head]
-                axis.plot([current_vertex_x, head_x], [current_vertex_y, head_y], 'aqua', linestyle='-', linewidth=1, zorder=1)
+                axis.plot([current_vertex_x, head_x], [current_vertex_y, head_y], 'aqua', linestyle='-', linewidth=1, zorder=0)
                 plt.draw()
                 plt.pause(0.01)
 
@@ -122,7 +122,7 @@ def getShortestPathAndWeight(previous_vertices, total_weight):
 
         for edge in edges[previous_vertex]:
             if edge[0] == current_vertex:
-                current_weight = round(current_weight-edge[1], 6)
+                current_weight = round(current_weight-edge[1], 2)
                 weight_path.insert(0, current_weight)
 
         shortest_path.insert(0, current_vertex)
@@ -188,9 +188,12 @@ def plotGraph(unvisited_graph):
     axis.scatter(x_coords, y_coords, s=30, color='black', zorder=1)
 
     # Make start and goal vertices different from the rest
-    x_coords = [coordinates[start_vertex][0], coordinates[goal_vertex][0]]
-    y_coords = [coordinates[start_vertex][1], coordinates[goal_vertex][1]]
-    axis.scatter(x_coords, y_coords, s=30, color='red', zorder=3)
+    start_x_coords = [coordinates[start_vertex][0]]
+    start_y_coords = [coordinates[start_vertex][1]]
+    axis.scatter(start_x_coords, start_y_coords, s=30, color='lime', zorder=3)
+    end_x_coords = [coordinates[goal_vertex][0]]
+    end_y_coords = [coordinates[goal_vertex][1]]
+    axis.scatter(end_x_coords, end_y_coords, s=30, color='red', zorder=3)
 
     axis.set_aspect('equal')
 

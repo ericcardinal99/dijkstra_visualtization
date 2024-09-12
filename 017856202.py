@@ -1,4 +1,8 @@
 import matplotlib.pyplot as plt
+from matplotlib.animation import FFMpegWriter
+import os
+plt.rcParams['animation.ffmpeg_path'] = os.path.join(os.getcwd(), 'ffmpeg.exe')
+print(os.path.join(os.getcwd(), 'ffmpeg.exe'))
 
 total_vertices = -1
 start_vertex = -1
@@ -6,6 +10,9 @@ goal_vertex = -1
 edges = {}
 coordinates = {}
 create_video = True
+metadata = dict(title="Dijkstra Animation")
+writer = FFMpegWriter(fps=30, metadata=metadata)
+fig, axis = plt.subplots()
 
 def readInputFile():
     input_data_file = open("input.txt", "r")
@@ -54,7 +61,7 @@ def dijkstra():
     if create_video:
         graph = createGraph()
         axis = plotGraph(graph)
-
+    
     total_weight = float('inf')
     unvisited_vertices = {}
     previous_vertices = {}
@@ -86,6 +93,7 @@ def dijkstra():
             current_vertex_x, current_vertex_y = coordinates[current_vertex]
             axis.scatter(current_vertex_x, current_vertex_y, s=30, color='deepskyblue', zorder=2)
             plt.draw()
+            writer.grab_frame()
 
         current_vertex_edges = edges[current_vertex]
         
@@ -105,6 +113,7 @@ def dijkstra():
                 head_x, head_y = coordinates[edge_head]
                 axis.plot([current_vertex_x, head_x], [current_vertex_y, head_y], 'aqua', linestyle='-', linewidth=1, zorder=0)
                 plt.draw()
+                writer.grab_frame()
                 plt.pause(0.01)
 
     return total_weight, previous_vertices, axis
@@ -131,6 +140,7 @@ def getShortestPathAndWeight(previous_vertices, total_weight):
             axis.scatter(current_vertex_x, current_vertex_y, s=30, color='lime', zorder=3)
             axis.plot([current_vertex_x, previous_vertex_x], [current_vertex_y, previous_vertex_y], 'lime', linestyle='-', linewidth=1, zorder=4)
             plt.draw()
+            writer.grab_frame()
             plt.pause(0.3)
     return shortest_path, weight_path
     
@@ -168,8 +178,6 @@ def createGraph():
     return graph
 
 def plotGraph(unvisited_graph):
-    function, axis = plt.subplots()
-
     unvisited_vertices = list(unvisited_graph.keys())
     graph_edges = []
     
@@ -200,10 +208,17 @@ def plotGraph(unvisited_graph):
     # Show plot
     plt.grid(False)
     plt.draw()
+    writer.grab_frame()
     return axis
 
 readInputFile()
 readCoordinateFile()
-total_weight, previous_vertices, axis = dijkstra()
-shortest_path, weight_path = getShortestPathAndWeight(previous_vertices, total_weight)
+
+if create_video:
+    with writer.saving(fig, "017856202.mp4", 100): 
+        total_weight, previous_vertices, axis = dijkstra()
+        shortest_path, weight_path = getShortestPathAndWeight(previous_vertices, total_weight)
+else:
+    total_weight, previous_vertices, axis = dijkstra()
+    shortest_path, weight_path = getShortestPathAndWeight(previous_vertices, total_weight)
 createOutputFile(shortest_path, weight_path)

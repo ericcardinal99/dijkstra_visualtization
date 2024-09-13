@@ -2,7 +2,6 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FFMpegWriter
 import os
 plt.rcParams['animation.ffmpeg_path'] = os.path.join(os.getcwd(), 'ffmpeg.exe')
-print(os.path.join(os.getcwd(), 'ffmpeg.exe'))
 
 total_vertices = -1
 start_vertex = -1
@@ -211,14 +210,17 @@ def plotGraph(unvisited_graph):
     writer.grab_frame()
     return axis
 
-readInputFile()
-readCoordinateFile()
+def main() :
+    readInputFile()
+    readCoordinateFile()
 
-if create_video:
-    with writer.saving(fig, "017856202.mp4", 100): 
+    if create_video:
+        with writer.saving(fig, "017856202.mp4", 100): 
+            total_weight, previous_vertices, axis = dijkstra()
+            shortest_path, weight_path = getShortestPathAndWeight(previous_vertices, total_weight)
+    else:
         total_weight, previous_vertices, axis = dijkstra()
         shortest_path, weight_path = getShortestPathAndWeight(previous_vertices, total_weight)
-else:
-    total_weight, previous_vertices, axis = dijkstra()
-    shortest_path, weight_path = getShortestPathAndWeight(previous_vertices, total_weight)
-createOutputFile(shortest_path, weight_path)
+    createOutputFile(shortest_path, weight_path)
+
+main()
